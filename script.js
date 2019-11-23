@@ -5,16 +5,38 @@ var ctx = can.getContext('2d');
 can.height = 600;
 can.width = 1100;
 
-var posiPersonVert = 480;
+var posiPersonVertPadrao = 480;
+
+var posiPersonVert = posiPersonVertPadrao;
 var posiPersonHori = 120;
+
+var pulando = false;
+
+var teclaPressionada = false;
 
 desenhar();
 
 function desenhar(){
     
-    desenharCenario();
+    teclaPressionada = false;
 
+    document.onkeypress = function(evt){
+        
+        teclaPressionada = true;
+
+        teste(evt);
+    }
+
+    desenharCenario();
+    
+    gravidade();
+    
     desenharPersonagem();
+
+    if(teclaPressionada == false){
+
+        //teclaAnterior = null;        
+    }
 
     requestAnimationFrame(desenhar);
 }
@@ -66,6 +88,11 @@ function desenhaBlocos(posiVertial, posiHorizontal, comprimento, altura, cor = n
         }
     }
 
+    if(cor != "azul"){
+
+        
+    }
+
     ctx.fillStyle = corRgba;
     ctx.fillRect(posiHorizontal, posiVertial, comprimento, altura);
 }
@@ -76,31 +103,97 @@ function desenharPersonagem(){
     ctx.fillRect(posiPersonHori, posiPersonVert, 30, 60);
 }
 
-document.onkeypress = function(evt){
+function gravidade(){
 
-    evt = evt || window.event;
-    var key = evt.keyCode || evt.which;
+    if(posiPersonVert != posiPersonVertPadrao){
 
-    var str = String.fromCharCode(key);
+        pulando = true;
+
+        posiPersonVert = posiPersonVert + 5;
+    }else{
+        pulando = false;
+    }
+
+    if(pulando == true){
+
+        if(puloDiagonal == true){
     
-    if(str == 'a' || str == 'A'){
-        
-        posiPersonHori = posiPersonHori - 10;
+            posiPersonHori = posiPersonHori + velocidade;
+
+            if(velocidade == 0){
+
+                puloDiagonal = false;
+            }
+        }
     }
+}
+
+function colisao(){
+
+
+}
+
+var velocidade = 0;
+var teclaAnterior = null;
+var puloDiagonal = false;
+
+function teste(evt){
+
+    if(evt != null){
+
+        evt = evt || window.event;
+        var key = evt.keyCode || evt.which;
     
-    if(str == 'd' || str == 'D'){
+        var str = String.fromCharCode(key);
         
-        posiPersonHori = posiPersonHori + 10;
-    }
+        if(str == 'a' || str == 'A'){
+            
+            posiPersonHori = posiPersonHori - 10;
+            
+            if(teclaAnterior == 'a'){
+                
+                velocidade = -3;
+            }else{
+                velocidade = 0;
+            }
+    
+            teclaAnterior = 'a';
+        }
 
-    if(str == 'w' || str == 'W'){
-        
-        posiPersonVert = posiPersonVert - 10;
-    }
+        if(str == 'd' || str == 'D'){
+            
+            posiPersonHori = posiPersonHori + 10;
+    
+            if(teclaAnterior == 'd'){
+                
+                velocidade = 3;
+            }else{
+                velocidade = 0;
+            }
+    
+            teclaAnterior = 'd';
+        }
+         
+        if(str == ' '){
 
-     
-    if(str == ' '){
-        
-        posiPersonVert = posiPersonVert - 10;
+            if(pulando == false){
+                
+                posiPersonVert = posiPersonVert - 220;
+    
+                if(velocidade != 0){
+    
+                    puloDiagonal = true;
+                }else{
+                    puloDiagonal = false;
+                }
+    
+                if(teclaAnterior == ' '){
+    
+                    velocidade = 0;
+                }
+    
+                teclaAnterior = ' ';
+            }
+        }
     }
 };
