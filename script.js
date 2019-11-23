@@ -5,11 +5,16 @@ var ctx = can.getContext('2d');
 can.height = 600;
 can.width = 1100;
 
+var posiPersonVert = 480;
+var posiPersonHori = 120;
+
 desenhar();
 
 function desenhar(){
     
     desenharCenario();
+
+    desenharPersonagem();
 
     requestAnimationFrame(desenhar);
 }
@@ -64,3 +69,38 @@ function desenhaBlocos(posiVertial, posiHorizontal, comprimento, altura, cor = n
     ctx.fillStyle = corRgba;
     ctx.fillRect(posiHorizontal, posiVertial, comprimento, altura);
 }
+
+function desenharPersonagem(){
+
+    ctx.fillStyle = "rgba(255, 0, 0, 10)";
+    ctx.fillRect(posiPersonHori, posiPersonVert, 30, 60);
+}
+
+document.onkeypress = function(evt){
+
+    evt = evt || window.event;
+    var key = evt.keyCode || evt.which;
+
+    var str = String.fromCharCode(key);
+    
+    if(str == 'a' || str == 'A'){
+        
+        posiPersonHori = posiPersonHori - 10;
+    }
+    
+    if(str == 'd' || str == 'D'){
+        
+        posiPersonHori = posiPersonHori + 10;
+    }
+
+    if(str == 'w' || str == 'W'){
+        
+        posiPersonVert = posiPersonVert - 10;
+    }
+
+     
+    if(str == ' '){
+        
+        posiPersonVert = posiPersonVert - 10;
+    }
+};
