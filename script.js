@@ -3,7 +3,7 @@ var can = document.getElementById('canvas');
 var ctx = can.getContext('2d');
 
 can.height = 600;
-can.width = 1100;
+can.width = 5000;
 
 var posiPersonVertPadrao = 480;
 
@@ -12,31 +12,24 @@ var posiPersonHori = 120;
 
 var pulando = false;
 
-var teclaPressionada = false;
+var velocidade = 0;
+var valorVelocidade = 3;
+var teclaAnterior = null;
+var puloDiagonal = false;
+
+var salto = false;
 
 desenhar();
 
 function desenhar(){
     
-    teclaPressionada = false;
-
-    document.onkeypress = function(evt){
-        
-        teclaPressionada = true;
-
-        teste(evt);
-    }
+    controle();
 
     desenharCenario();
     
     gravidade();
     
     desenharPersonagem();
-
-    if(teclaPressionada == false){
-
-        //teclaAnterior = null;        
-    }
 
     requestAnimationFrame(desenhar);
 }
@@ -48,7 +41,7 @@ function desenharCenario(){
     desenhaBlocos(0, 0, can.width, can.height, "azul");
     
     // chão
-    desenhaBlocos(can.height-60, 0, can.width, 60, "marrom");
+    desenhaBlocos(can.height-60, 0, 1800, 60, "marrom");
     
     desenhaBlocos(390, 200, 30, 30, "amarelo");
     
@@ -62,6 +55,79 @@ function desenharCenario(){
 
     desenhaBlocos(490, 590, 60, 50, "verde");
     desenhaBlocos(450, 580, 80, 40, "verde");
+
+    desenhaBlocos(440, 1010, 60, 100, "verde");
+    desenhaBlocos(400, 1000, 80, 40, "verde");
+
+    desenhaBlocos(440, 1510, 60, 100, "verde");
+    desenhaBlocos(400, 1500, 80, 40, "verde");
+
+    desenhaBlocos(can.height-60, 1950, 500, 60, "marrom");
+
+    desenhaBlocos(390, 2300, 30, 30, "marrom");
+    desenhaBlocos(390, 2330, 30, 30, "amarelo");
+    desenhaBlocos(390, 2360, 30, 30, "marrom");
+
+    desenhaBlocos(250, 2390, 30, 30, "marrom");
+    desenhaBlocos(250, 2420, 30, 30, "marrom");
+    desenhaBlocos(250, 2450, 30, 30, "marrom");
+    desenhaBlocos(250, 2480, 30, 30, "marrom");
+    desenhaBlocos(250, 2510, 30, 30, "marrom");
+    desenhaBlocos(250, 2540, 30, 30, "marrom");
+
+    desenhaBlocos(can.height-60, 2600, 2500, 60, "marrom");
+
+    desenhaBlocos(250, 2630, 30, 30, "marrom");
+    desenhaBlocos(250, 2660, 30, 30, "marrom");
+    desenhaBlocos(250, 2690, 30, 30, "marrom");
+    desenhaBlocos(250, 2720, 30, 30, "amarelo");
+
+    desenhaBlocos(390, 2720, 30, 30, "marrom");
+
+    desenhaBlocos(390, 3000, 30, 30, "marrom");
+    desenhaBlocos(390, 3030, 30, 30, "marrom");
+    desenhaBlocos(390, 3060, 30, 30, "marrom");
+
+    desenhaBlocos(390, 3300, 30, 30, "amarelo");
+    desenhaBlocos(390, 3400, 30, 30, "amarelo");
+    desenhaBlocos(390, 3500, 30, 30, "amarelo");
+
+    desenhaBlocos(250, 3400, 30, 30, "amarelo");
+
+    desenhaBlocos(390, 3800, 30, 30, "marrom");
+
+    desenhaBlocos(250, 3860, 30, 30, "marrom");
+    desenhaBlocos(250, 3890, 30, 30, "marrom");
+    desenhaBlocos(250, 3920, 30, 30, "marrom");
+
+    desenhaBlocos(250, 4100, 30, 30, "marrom");
+    desenhaBlocos(250, 4130, 30, 30, "amarelo");
+    desenhaBlocos(250, 4160, 30, 30, "amarelo");
+    desenhaBlocos(250, 4190, 30, 30, "marrom");
+
+    desenhaBlocos(390, 4130, 30, 30, "marrom");
+    desenhaBlocos(390, 4160, 30, 30, "marrom");
+
+
+    // Escada subindo
+    desenhaBlocos(510, 4500, 30, 30, "marrom");
+    desenhaBlocos(510, 4530, 30, 30, "marrom");
+    desenhaBlocos(510, 4560, 30, 30, "marrom");
+
+    desenhaBlocos(480, 4530, 30, 30, "marrom");
+    desenhaBlocos(480, 4560, 30, 30, "marrom");
+
+    desenhaBlocos(450, 4560, 30, 30, "marrom");
+
+    // Escada descendo
+    desenhaBlocos(450, 4760, 30, 30, "marrom");
+
+    desenhaBlocos(480, 4760, 30, 30, "marrom");
+    desenhaBlocos(480, 4790, 30, 30, "marrom");
+
+    desenhaBlocos(510, 4760, 30, 30, "marrom");
+    desenhaBlocos(510, 4790, 30, 30, "marrom");
+    desenhaBlocos(510, 4820, 30, 30, "marrom");
 }
 
 function desenhaBlocos(posiVertial, posiHorizontal, comprimento, altura, cor = null){
@@ -103,6 +169,11 @@ function desenharPersonagem(){
     ctx.fillRect(posiPersonHori, posiPersonVert, 30, 60);
 }
 
+function colisao(){
+
+
+}
+
 function gravidade(){
 
     if(posiPersonVert != posiPersonVertPadrao){
@@ -117,27 +188,66 @@ function gravidade(){
     if(pulando == true){
 
         if(puloDiagonal == true){
-    
-            posiPersonHori = posiPersonHori + velocidade;
+            
+            if(velocidade < 0){
 
-            if(velocidade == 0){
+                valorVelocidade = -3;
 
-                puloDiagonal = false;
+            }else if(velocidade > 0){
+                
+                valorVelocidade = 3;
             }
+
+            if(pulando == true){
+
+                if(puloInicial == true){
+
+                    if(posiPersonVert > 300){
+    
+                        posiPersonVert = posiPersonVert - 30;
+                    }else{
+                        puloInicial = false;
+                    }
+                }
+            }
+
+            posiPersonHori = posiPersonHori + valorVelocidade;
         }
     }
 }
 
-function colisao(){
+function controle(){
 
+    document.onkeydown = function(evt){
+        
+        teclaPressionada = true;
 
+        verificarTeclaPressionada(evt);
+    }
+
+    document.onkeyup = function(){
+
+        salto = true;
+    }
+
+    if(salto == true){
+
+        if(velocidade > 0){
+
+            velocidade--;
+        }else if(velocidade < 0){
+
+            velocidade++;
+        }else if(velocidade == 0){
+
+            salto = false;
+        }
+    }
 }
 
-var velocidade = 0;
-var teclaAnterior = null;
-var puloDiagonal = false;
+var puloInicial = false;
 
-function teste(evt){
+function verificarTeclaPressionada(evt){
 
     if(evt != null){
 
@@ -146,44 +256,56 @@ function teste(evt){
     
         var str = String.fromCharCode(key);
         
-        if(str == 'a' || str == 'A'){
-            
-            posiPersonHori = posiPersonHori - 10;
-            
-            if(teclaAnterior == 'a'){
+        if(puloDiagonal == false || pulando == false){
+
+            if(str == 'a' || str == 'A'){
                 
-                velocidade = -3;
-            }else{
-                velocidade = 0;
+                posiPersonHori = posiPersonHori - 10;
+                
+                // se tecla anterior for a mesma que a atual
+                if(teclaAnterior == 'a'){
+                    
+                    velocidade = -10;
+                }else{
+                    velocidade = 0;
+                }
+        
+                teclaAnterior = 'a';
             }
     
-            teclaAnterior = 'a';
+            if(str == 'd' || str == 'D'){
+                
+                posiPersonHori = posiPersonHori + 10;
+        
+                // se tecla anterior for a mesma que a atual
+                if(teclaAnterior == 'd'){
+                    
+                    velocidade = 10;
+                }else{
+                    velocidade = 0;
+                }
+        
+                teclaAnterior = 'd';
+            }
         }
 
-        if(str == 'd' || str == 'D'){
-            
-            posiPersonHori = posiPersonHori + 10;
-    
-            if(teclaAnterior == 'd'){
-                
-                velocidade = 3;
-            }else{
-                velocidade = 0;
-            }
-    
-            teclaAnterior = 'd';
-        }
          
         if(str == ' '){
 
+            // se pernonagem estiver no chão ( não pulando )
             if(pulando == false){
-                
-                posiPersonVert = posiPersonVert - 220;
-    
+
+                puloInicial = true;
+
                 if(velocidade != 0){
+                    
+                    posiPersonVert = posiPersonVert - 30;
     
                     puloDiagonal = true;
                 }else{
+
+                    posiPersonVert = posiPersonVert - 230;
+
                     puloDiagonal = false;
                 }
     
@@ -196,4 +318,4 @@ function teste(evt){
             }
         }
     }
-};
+}
